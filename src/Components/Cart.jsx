@@ -1,42 +1,92 @@
+
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 
-function Cart(){
 
-  const [cartItems,setCartItems] = useState([]);
+function Cart() {
+  const [cartItems, setCartItems] = useState([]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     setCartItems(cart);
-  },[]);
+  }, []);
 
-  const removeItem = (index)=>{
-    const updated = cartItems.filter((_,i)=>i!==index);
-    setCartItems(updated);
-    localStorage.setItem("cart",JSON.stringify(updated));
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      // 🔹 NEW: ensure each item has quantity
+    const cartWithQty = cart.map(item => ({
+      ...item,                                          //...items means all items
+       quantity: item.quantity || 1
+    }));
+
+
+
+    setCartItems(cartWithQty);
+  }, []);
+  const increaseQty = (index) => {
+    const temp = [...cartItems];
+    temp[index].quantity = temp[index].quantity + 1;
+    setCartItems(temp);
+    localStorage.setItem("cart", JSON.stringify(temp));
   };
 
-  let total = 0;
-  cartItems.forEach(item=> total += item.price);
+  // 🔹 NEW: decrease quantity
+  const decreaseQty = (index) => {
+    const temp = [...cartItems];
+    if (temp[index].quantity > 1) {
+      temp[index].quantity = temp[index].quantity - 1;
+      setCartItems(temp);
+      localStorage.setItem("cart", JSON.stringify(temp));
+    }
+  };
 
-  return(
+//total
+
+let totalPrice=0;
+cartItems.forEach(item => {
+  totalPrice += item.price * item.quantity;
+});
+//delete item from cart
+const removeItem  =(indextoRemove) =>{
+  const updatedCart=cartItems.filter((_,index) => index!== indextoRemove);
+  setCartItems(updatedCart);
+  localStorage.setItem("cart", JSON.stringify(updatedCart));
+}
+
+  return (
     <>
-    <Header/>
-    <div style={{textAlign:"center",marginTop:"120px"}}>
-      <h2>Your Cart</h2>
+      <Header />
 
-      {cartItems.map((item,index)=>(
-        <div key={index}>
-          <h3>{item.title}</h3>
-          <p>₹{item.price}</p>
-          <button onClick={()=>removeItem(index)}>Remove</button>
-        </div>
-      ))}
+      <div style={{ paddingTop: "120px", paddingBottom: "80px", textAlign: "center" }}>
+        <h1>Your Cart</h1>
 
-      <h3>Total: ₹{total}</h3>
-    </div>
-    <Footer/>
+        {cartItems.length === 0 ? (
+          <h3>No items in cart</h3>
+        ) : (
+          <div className="products">
+            {cartItems.map((item, index) => (
+              <div className="product" key={index}>
+                <img src={item.thumbnail} alt={item.title} />
+                <h3>{item.title}</h3>
+                <p>Price: ${item.price}</p>  
+                <div>
+                 <button onClick={() => decreaseQty(index)}>-</button>
+                  <span style={{ margin: "0 20px" }}>Item count: {item.quantity}</span>
+                  <button onClick={() => increaseQty(index)}>+</button>
+                <button onClick={() => removeItem(index)}>Clear Cart</button>
+                </div>
+              </div>
+             
+            ))}
+          </div>
+        )}
+        <p>Total Price: ${totalPrice}</p>
+      </div>
+
+      <Footer
+       />  
     </>
   );
 }

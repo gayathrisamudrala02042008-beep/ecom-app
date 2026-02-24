@@ -18,6 +18,7 @@ function Header(){
       <h1>🛒 KL University Shop</h1>
 
       <nav>
+        <Link to="/home">Home</Link>
         <Link to="/products">Products</Link>
         {role==="user" && <Link to="/cart">Cart</Link>}
         {name && <button className="btn" onClick={handleLogout}>Logout</button>}
