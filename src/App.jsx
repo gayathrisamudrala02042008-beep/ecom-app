@@ -7,6 +7,7 @@ import Cart from "./Components/Cart";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import "../src/Components/styles.css"
+import Home from "./Components/Home";
 
 
 function App(){
@@ -19,6 +20,7 @@ function App(){
         <Route path="/products" element={<Product1/>}/>
         <Route path="/admin" element={<AdminPage/>}/>
         <Route path="/cart" element={<Cart/>}/>
+        <Route path="/home" element={<Home/>}/>
         <Route path="/header" element={<Header/>}/>
         <Route path="/footer" element={<Footer/>}/>
       </Routes>
